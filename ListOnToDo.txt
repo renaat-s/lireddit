@@ -1,39 +1,34 @@
 Errors to fix:
-- cookie not saving on register page
+- cookie not saving on register page--> COOKIES SAVE, just have to toggle the secure flag in server > src > index.ts
+	--> Also make sure to use Firefox as chrome might be blocking due to same-site properties
+	
 
-tsconfig.json at 1245 on 27-1
-{
-  "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noImplicitThis": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": false,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "incremental": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve"
-  },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+ user: 'nadvvnw7uecivgvv@ethereal.email',
+  pass: '29GxqNEDG86hGEg3cQ',
+  smtp: { host: 'smtp.ethereal.email', port: 587, secure: false },
+  imap: { host: 'imap.ethereal.email', port: 993, secure: true },
+  pop3: { host: 'pop3.ethereal.email', port: 995, secure: true },
+  web: 'https://ethereal.email'
 }
+Message sent: <cda8eb84-fedd-3777-adfa-238a4115968e@example.com>
+Preview URL: https://ethereal.email/message/YfNYXnrDRrW-N0iCYfNYYBq9DBfCpdr7AAAAAdY6guNKCB07ttot8EPltco
+
+
+
+Tools and frameworks used:
+
+- TypeScript
+- Express
+- NextJS
+- React with Chakra-ui
+- Apolloserver for express
+- Redis with ioredis package, running on WSL ubuntu
+- Graphql, type-graphql,graphql-codegen 
+- cors package
+- mikro-orm (partially) --> switched to typeorm
+- nodemailer package
+- Yarn package manager
+- urql / next-urql
+- formik, framer-motion, uuid, argon2, 
+- nodemon
+- postgres

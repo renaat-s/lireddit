@@ -1,4 +1,3 @@
-import { MikroORM } from "@mikro-orm/core";
 import { ApolloServerPluginDrainHttpServer, ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core'; //trying to fix cookies
 import { ApolloServer } from 'apollo-server-express';
 import connectRedis from 'connect-redis';
@@ -10,18 +9,25 @@ import Redis from 'ioredis';
 import "reflect-metadata";
 import { buildSchema } from "type-graphql";
 import { COOKIE_NAME } from "./constants";
-import microConfig from "./mikro-orm.config";
 import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
+import {createConnection} from "typeorm";
+import {Post} from "./entities/Post";
+import {User} from "./entities/User";
 
-const main =  async() => {      
-    const orm = await MikroORM.init(microConfig);
-    await orm.getMigrator().up();
-    
-    const generator = orm.getSchemaGenerator();
-    await generator.updateSchema();
-    
+const main =  async() => {
+    // const conn = 
+    await createConnection({
+        type: 'postgres',
+        database: 'lireddit2',
+        username: 'postgres',
+        password: 'postgres',
+        logging: true,
+        synchronize: true, //auto migrates, good for development
+        entities: [Post, User]
+    });
+        
    const app = express();
 
    const RedisStore = connectRedis(session);
@@ -65,7 +71,7 @@ const main =  async() => {
            resolvers: [HelloResolver, PostResolver,UserResolver],
            validate: false,           
        }),
-       context: ({req,res}) => ({em: orm.em,req,res,redis}),
+       context: ({req,res}) => ({req,res,redis}),
    });
 
 
