@@ -22,6 +22,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostResolver = void 0;
+const isAuth_1 = require("src/middleware/isAuth");
 const type_graphql_1 = require("type-graphql");
 const Post_1 = require("../entities/Post");
 let PostInput = class PostInput {
@@ -48,9 +49,6 @@ let PostResolver = class PostResolver {
     }
     createPost(input, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!req.session.UserId) {
-                throw new Error("Not authenticated");
-            }
             return Post_1.Post.create(Object.assign(Object.assign({}, input), { creatorId: req.session.UserId })).save();
         });
     }
@@ -93,6 +91,7 @@ __decorate([
 ], PostResolver.prototype, "post", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => Post_1.Post),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
     __param(0, (0, type_graphql_1.Arg)("input")),
     __param(1, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
