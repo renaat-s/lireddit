@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.isAuth = void 0;
 const isAuth = ({ context }, next) => {
     if (!context.req.session.UserId) {
-        throw new Error("Not authenticated");
+        throw new Error("not authenticated");
     }
     return next();
 };

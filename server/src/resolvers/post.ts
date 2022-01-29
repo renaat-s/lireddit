@@ -25,12 +25,11 @@ export class PostResolver{
 
     @Mutation(() => Post)
     @UseMiddleware(isAuth)
-    async createPost(
-        @Arg("input") input: PostInput, 
+    async createPost(@Arg("input") input: PostInput, 
         @Ctx(){req}: MyContext): Promise<Post>{       
         return Post.create({
             ...input,
-            creatorId: req.session.UserId
+            creatorId: req.session.UserId,
         }).save();
     }
 
