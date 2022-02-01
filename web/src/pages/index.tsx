@@ -6,13 +6,16 @@ import { usePostsQuery } from "../generated/graphql";
 import { createUrlClient } from "../utils/createURLClient";
 
 const Index = () => {
-  const [{data}] = usePostsQuery();
+  const [{data}] = usePostsQuery(
+    {variables: {
+      limit: 10,
+    }}
+  );
   return (
   <Layout>
     <NextLink href="/create-post">
-      <Link>create post</Link>
-      </NextLink>
-    <div>hello world</div>
+      <Link textColor={"white"} backgroundColor={"red.500"} padding={"1"}>create post</Link>
+      </NextLink>    
   <br/>
     {!data ? 
       (<div>loading...</div>) 

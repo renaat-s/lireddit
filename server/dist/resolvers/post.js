@@ -22,10 +22,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostResolver = void 0;
-const isAuth_1 = require("../middleware/isAuth");
 const type_graphql_1 = require("type-graphql");
-const Post_1 = require("../entities/Post");
 const typeorm_1 = require("typeorm");
+const Post_1 = require("../entities/Post");
+const isAuth_1 = require("../middleware/isAuth");
 let PostInput = class PostInput {
 };
 __decorate([
@@ -88,7 +88,7 @@ let PostResolver = class PostResolver {
 };
 __decorate([
     (0, type_graphql_1.Query)(() => [Post_1.Post]),
-    __param(0, (0, type_graphql_1.Arg)('limit')),
+    __param(0, (0, type_graphql_1.Arg)('limit', () => type_graphql_1.Int)),
     __param(1, (0, type_graphql_1.Arg)('cursor', () => String, { nullable: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, String]),

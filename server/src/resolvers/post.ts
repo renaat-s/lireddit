@@ -1,8 +1,8 @@
+import { Arg, Ctx, Field, InputType, Int, Mutation, Query, Resolver, UseMiddleware } from "type-graphql";
+import { getConnection } from "typeorm";
+import { Post } from "../entities/Post";
 import { isAuth } from "../middleware/isAuth";
 import { MyContext } from "../types";
-import { Arg, Ctx, Field, InputType, Int, Mutation, Query, Resolver, UseMiddleware } from "type-graphql";
-import { Post } from "../entities/Post";
-import { getConnection, getRepository } from "typeorm";
 
 @InputType()
 class PostInput{
@@ -16,7 +16,7 @@ class PostInput{
 export class PostResolver{
     @Query(() => [Post])
     async posts(
-        @Arg('limit') limit: number,
+        @Arg('limit', () => Int) limit: number,
         @Arg('cursor',() => String, {nullable:true}) cursor: string): Promise<Post[]>{                
         const realLimit = Math.min(50, limit);
         const qb =  getConnection()

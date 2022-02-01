@@ -15,9 +15,10 @@ import { UserResolver } from "./resolvers/user";
 import {createConnection} from "typeorm";
 import {Post} from "./entities/Post";
 import {User} from "./entities/User";
+import path from "path";
 
 const main =  async() => {
-    // const conn = 
+    const conn = 
     await createConnection({
         type: 'postgres',
         database: 'lireddit2',
@@ -25,9 +26,12 @@ const main =  async() => {
         password: 'postgres',
         logging: true,
         synchronize: true, //auto migrates, good for development
-        entities: [Post, User]
+        entities: [Post, User],
+        migrations: [path.join(__dirname, "./migrations/*")]
     });
-        
+
+    await conn.runMigrations();
+
    const app = express();
 
    const RedisStore = connectRedis(session);
