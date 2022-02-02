@@ -37,6 +37,8 @@ const Index = () => {
           <Box>
           <Heading fontSize='xl'>{p.title}</Heading> 
           <Text fontSize={12}>posted by {p.creator.username}</Text>
+          <Text fontSize={12}>post id {p.id}</Text>
+          <Text fontSize={12}>post votestatus {p.voteStatus ? p.voteStatus : "null"}</Text>
           <Text mt={4}>{p.textSnippet}</Text>
           </Box>
           
@@ -56,4 +58,4 @@ const Index = () => {
   </Layout>)
 };
 
-export default withUrqlClient(createUrlClient ,{ssr: true}) (Index);
+export default withUrqlClient(createUrlClient ,{ssr: false}) (Index);
