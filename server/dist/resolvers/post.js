@@ -39,19 +39,70 @@ __decorate([
 PostInput = __decorate([
     (0, type_graphql_1.InputType)()
 ], PostInput);
+let PaginatedPosts = class PaginatedPosts {
+};
+__decorate([
+    (0, type_graphql_1.Field)(() => [Post_1.Post]),
+    __metadata("design:type", Array)
+], PaginatedPosts.prototype, "posts", void 0);
+__decorate([
+    (0, type_graphql_1.Field)(),
+    __metadata("design:type", Boolean)
+], PaginatedPosts.prototype, "hasMore", void 0);
+PaginatedPosts = __decorate([
+    (0, type_graphql_1.ObjectType)()
+], PaginatedPosts);
 let PostResolver = class PostResolver {
+    textSnippet(post) {
+        return post.text.slice(0, 50);
+    }
+    vote(postId, value, { req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const isUpdoot = value !== -1;
+            const realValue = isUpdoot ? 1 : -1;
+            const { UserId } = req.session;
+            yield (0, typeorm_1.getConnection)().query(`
+          START TRANSACTION;
+
+          insert into updoot("userId","postId",value)
+          values(${UserId},${postId},${realValue});
+          
+          update post
+          set points = points + ${realValue}
+          where p.id = ${postId};
+          
+          COMMIT;
+          `);
+            return true;
+        });
+    }
     posts(limit, cursor) {
         return __awaiter(this, void 0, void 0, function* () {
             const realLimit = Math.min(50, limit);
-            const qb = (0, typeorm_1.getConnection)()
-                .getRepository(Post_1.Post)
-                .createQueryBuilder("p")
-                .orderBy('"createdAt"', "DESC")
-                .take(realLimit);
+            const realLimitPlusOne = realLimit + 1;
+            const replacements = [realLimitPlusOne];
             if (cursor) {
-                qb.where('"createdAt" < :cursor', { cursor: new Date(parseInt(cursor)) });
+                replacements.push(new Date(parseInt(cursor)));
             }
-            return qb.getMany();
+            const posts = yield (0, typeorm_1.getConnection)().query(`
+        select p.* ,         
+        json_build_object(
+          'id', u.id,
+          'username', u.username,
+          'email', u.email,
+          'createdAt',u."createdAt",
+          'updatedAt',u."updatedAt"
+          ) "creator"
+        from post p 
+        inner join "user" u on u.id = p."creatorId"
+        ${cursor ? `where p."createdAt" < $2` : ""}        
+        order by p."createdAt" DESC
+        limit $1
+        `, replacements);
+            return {
+                posts: posts.slice(0, realLimit),
+                hasMore: posts.length === realLimitPlusOne,
+            };
         });
     }
     post(id) {
@@ -87,11 +138,28 @@ let PostResolver = class PostResolver {
     }
 };
 __decorate([
-    (0, type_graphql_1.Query)(() => [Post_1.Post]),
-    __param(0, (0, type_graphql_1.Arg)('limit', () => type_graphql_1.Int)),
-    __param(1, (0, type_graphql_1.Arg)('cursor', () => String, { nullable: true })),
+    (0, type_graphql_1.FieldResolver)(() => String),
+    __param(0, (0, type_graphql_1.Root)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String]),
+    __metadata("design:paramtypes", [Post_1.Post]),
+    __metadata("design:returntype", void 0)
+], PostResolver.prototype, "textSnippet", null);
+__decorate([
+    (0, type_graphql_1.Mutation)(() => Boolean),
+    (0, type_graphql_1.UseMiddleware)(isAuth_1.isAuth),
+    __param(0, (0, type_graphql_1.Arg)('postId', () => type_graphql_1.Int)),
+    __param(1, (0, type_graphql_1.Arg)("value", () => type_graphql_1.Int)),
+    __param(2, (0, type_graphql_1.Ctx)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number, Object]),
+    __metadata("design:returntype", Promise)
+], PostResolver.prototype, "vote", null);
+__decorate([
+    (0, type_graphql_1.Query)(() => PaginatedPosts),
+    __param(0, (0, type_graphql_1.Arg)("limit", () => type_graphql_1.Int)),
+    __param(1, (0, type_graphql_1.Arg)("cursor", () => String, { nullable: true })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "posts", null);
 __decorate([
@@ -126,7 +194,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PostResolver.prototype, "deletePost", null);
 PostResolver = __decorate([
-    (0, type_graphql_1.Resolver)()
+    (0, type_graphql_1.Resolver)(Post_1.Post)
 ], PostResolver);
 exports.PostResolver = PostResolver;
 //# sourceMappingURL=post.js.map

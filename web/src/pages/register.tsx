@@ -9,7 +9,7 @@ import React from "react";
 import { InputField } from "../components/InputField";
 import { Layout } from "../components/Layout";
 import { useRegisterMutation } from "../generated/graphql";
-import { createUrlClient } from "../utils/createURLClient";
+import { createUrlClient } from "../utils/createUrqlClient";
 import { toErrorMap } from "../utils/toErrorMap";
 
 interface registerProps {}

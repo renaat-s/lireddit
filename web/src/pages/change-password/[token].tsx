@@ -8,7 +8,7 @@ import { Wrapper } from '../../components/Wrapper';
 import { toErrorMap } from '../../utils/toErrorMap';
 import {useChangePasswordMutation} from "../../generated/graphql"
 import { withUrqlClient } from 'next-urql';
-import { createUrlClient } from '../../utils/createURLClient';
+import { createUrlClient } from '../../utils/createUrqlClient';
 import NextLink from "next/link";
 
 const ChangePassword: NextPage = () => {

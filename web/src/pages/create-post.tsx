@@ -6,7 +6,7 @@ import React from 'react';
 import { InputField } from '../components/InputField';
 import { Layout } from '../components/Layout';
 import { useCreatePostMutation } from '../generated/graphql';
-import { createUrlClient } from '../utils/createURLClient';
+import { createUrlClient } from '../utils/createUrqlClient';
 import { useIsAuth } from '../utils/useIsAuth';
 
 

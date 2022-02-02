@@ -32,3 +32,6 @@ Tools and frameworks used:
 - formik, framer-motion, uuid, argon2, 
 - nodemon
 - postgres
+
+
+--> Contribute to ben awad project: fix type reaLimit to realLimit, also switch to using urql resolve instead of deprecated resolveField...
