@@ -41,7 +41,7 @@ import { getConnection } from "typeorm";
     @FieldResolver(() => String)
     email(@Root() user: User, @Ctx() { req }: MyContext) {
     // this is the current user and its ok to show them their own email
-    if (req.session.UserId === user.id) {
+    if (req.session.userId === user.id) {
       return user.email;
     }
     // current user wants to see someone elses email
@@ -90,7 +90,7 @@ import { getConnection } from "typeorm";
 
       redis.del(key);
       //log in user after change password
-      req.session.UserId = user.id;
+      req.session.userId = user.id;
 
       return {user};
     }
@@ -123,11 +123,11 @@ import { getConnection } from "typeorm";
     @Query(() => User, { nullable: true })
     me(@Ctx() { req }: MyContext) {
       // you are not logged in
-      if (!req.session.UserId) {
+      if (!req.session.userId) {
         return null;
       }
   
-      return User.findOne(req.session.UserId);
+      return User.findOne(req.session.userId);
        
     }
   
@@ -177,7 +177,7 @@ import { getConnection } from "typeorm";
       // store user id session
       // this will set a cookie on the user
       // keep them logged in
-      req.session.UserId = user.id;
+      req.session.userId = user.id;
   
       return { user };
     }
@@ -213,7 +213,7 @@ import { getConnection } from "typeorm";
         };
       }
   
-      req.session.UserId = user.id;
+      req.session.userId = user.id;
   
       return {
         user,

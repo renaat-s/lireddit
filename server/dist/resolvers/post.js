@@ -22,6 +22,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostResolver = void 0;
+const Updoot_1 = require("../entities/Updoot");
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
 const Post_1 = require("../entities/Post");
@@ -60,19 +61,35 @@ let PostResolver = class PostResolver {
         return __awaiter(this, void 0, void 0, function* () {
             const isUpdoot = value !== -1;
             const realValue = isUpdoot ? 1 : -1;
-            const { UserId } = req.session;
-            yield (0, typeorm_1.getConnection)().query(`
-          START TRANSACTION;
-
-          insert into updoot("userId","postId",value)
-          values(${UserId},${postId},${realValue});
-          
-          update post
-          set points = points + ${realValue}
-          where p.id = ${postId};
-          
-          COMMIT;
-          `);
+            const { userId } = req.session;
+            const updoot = yield Updoot_1.Updoot.findOne({ where: { postId, userId } });
+            if (updoot && updoot.value !== realValue) {
+                yield (0, typeorm_1.getConnection)().transaction((tm) => __awaiter(this, void 0, void 0, function* () {
+                    yield tm.query(`
+            update updoot
+            set value = $1
+            where "postId" = $2 and "userId" = $3
+            `, [realValue, postId, userId]);
+                    yield tm.query(`            
+            update post
+            set points = points + $1
+            where id = $2;
+            `, [2 * realValue, postId]);
+                }));
+            }
+            else if (!updoot) {
+                yield (0, typeorm_1.getConnection)().transaction((tm) => __awaiter(this, void 0, void 0, function* () {
+                    yield tm.query(`
+            insert into updoot("userId","postId",value)
+            values($1,$2,$3);
+            `, [userId, postId, realValue]);
+                    yield tm.query(`
+            update post
+            set points = points + $1
+            where id = $2;
+            `, [realValue, postId]);
+                }));
+            }
             return true;
         });
     }
@@ -110,7 +127,7 @@ let PostResolver = class PostResolver {
     }
     createPost(input, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
-            return Post_1.Post.create(Object.assign(Object.assign({}, input), { creatorId: req.session.UserId })).save();
+            return Post_1.Post.create(Object.assign(Object.assign({}, input), { creatorId: req.session.userId })).save();
         });
     }
     updatePost(id, title) {

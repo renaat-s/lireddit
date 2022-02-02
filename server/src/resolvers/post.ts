@@ -1,3 +1,4 @@
+import { Updoot } from "../entities/Updoot";
 import { Arg, Ctx, Field, FieldResolver, InputType, Int, Mutation, ObjectType, Query, Resolver, Root, UseMiddleware } from "type-graphql";
 import { getConnection } from "typeorm";
 import { Post } from "../entities/Post";
@@ -35,29 +36,48 @@ export class PostResolver{
       @Ctx() {req} : MyContext,
 
       ) 
-      {
+      {        
         const isUpdoot = value !== -1;
         const realValue = isUpdoot ? 1 : -1;
-        const {UserId} = req.session;
-        // await Updoot.insert({
-        //   userId: UserId,
-        //   postId,
-        //   value: realValue
-        // });
-        await getConnection().query(
-          `
-          START TRANSACTION;
+        const {userId} = req.session;
+        
 
-          insert into updoot("userId","postId",value)
-          values(${UserId},${postId},${realValue});
+        const updoot = await Updoot.findOne({ where: { postId, userId } });
+        // console.log("updoot:" ,updoot, realValue);
+        // console.log("updoot-value:" ,updoot?.value);
+
+        //previously voted and changing vote
+        if(updoot && updoot.value !== realValue){
+          await getConnection().transaction(async (tm) => {                  
+            await tm.query(`
+            update updoot
+            set value = $1
+            where "postId" = $2 and "userId" = $3
+            `, [realValue, postId,userId]);
+            
+            await tm.query(`            
+            update post
+            set points = points + $1
+            where id = $2;
+            `,[2 * realValue ,postId])
+            });
+        }
+        //not voted before
+        else if(!updoot){
+          await getConnection().transaction(async (tm) => {
+            await tm.query(`
+            insert into updoot("userId","postId",value)
+            values($1,$2,$3);
+            `, [userId, postId, realValue]);
           
-          update post
-          set points = points + ${realValue}
-          where p.id = ${postId};
-          
-          COMMIT;
-          `
-        );        
+            await tm.query(`
+            update post
+            set points = points + $1
+            where id = $2;
+            `,[realValue,postId])
+            });
+        }        
+            
         return true;
       }
 
@@ -112,7 +132,7 @@ export class PostResolver{
         @Ctx(){req}: MyContext): Promise<Post>{       
         return Post.create({
             ...input,
-            creatorId: req.session.UserId,
+            creatorId: req.session.userId,
         }).save();
     }
 

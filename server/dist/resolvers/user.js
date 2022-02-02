@@ -62,7 +62,7 @@ UserResponse = __decorate([
 ], UserResponse);
 let UserResolver = class UserResolver {
     email(user, { req }) {
-        if (req.session.UserId === user.id) {
+        if (req.session.userId === user.id) {
             return user.email;
         }
         return "";
@@ -99,7 +99,7 @@ let UserResolver = class UserResolver {
             }
             yield User_1.User.update({ id: usertIdNum }, { password: yield argon2_1.default.hash(newPassword) });
             redis.del(key);
-            req.session.UserId = user.id;
+            req.session.userId = user.id;
             return { user };
         });
     }
@@ -116,10 +116,10 @@ let UserResolver = class UserResolver {
         });
     }
     me({ req }) {
-        if (!req.session.UserId) {
+        if (!req.session.userId) {
             return null;
         }
-        return User_1.User.findOne(req.session.UserId);
+        return User_1.User.findOne(req.session.userId);
     }
     register(options, { req }) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -153,7 +153,7 @@ let UserResolver = class UserResolver {
                     };
                 }
             }
-            req.session.UserId = user.id;
+            req.session.userId = user.id;
             return { user };
         });
     }
@@ -183,7 +183,7 @@ let UserResolver = class UserResolver {
                     ],
                 };
             }
-            req.session.UserId = user.id;
+            req.session.userId = user.id;
             return {
                 user,
             };
