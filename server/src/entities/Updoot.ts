@@ -23,7 +23,7 @@ export class Updoot extends BaseEntity {
     postId: number;
 
     @Field(() => Post)
-    @ManyToOne(() => Post, (post) => post.updoots)
+    @ManyToOne(() => Post, (post) => post.updoots) // this would go in arguments if using cascading delete, {        onDelete: "CASCADE"})
     post: Post;
     
 }

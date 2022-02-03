@@ -1,6 +1,6 @@
 import { dedupExchange, Exchange, fetchExchange, stringifyVariables } from "urql";
 import {cacheExchange, Resolver} from "@urql/exchange-graphcache"
-import { LogoutMutation, MeQuery, MeDocument, LoginMutation, RegisterMutation, VoteMutationVariables } from "../generated/graphql";
+import { LogoutMutation, MeQuery, MeDocument, LoginMutation, RegisterMutation, VoteMutationVariables, DeletePostMutationVariables } from "../generated/graphql";
 import {betterUpdateQuery} from "./betterUpdateQuery"
 import { pipe, tap } from "wonka";
 import Router from "next/router";
@@ -60,7 +60,7 @@ const cursorPagination = (): Resolver => {
 export const createUrlClient = (ssrExchange: any, ctx: any) =>  {  
   let cookie = '';
   if(isServer()){ 
-    cookie = ctx.req.headers.cookie;}
+    cookie = ctx?.req?.headers?.cookie;}
 
   return {
     url: "http://localhost:4000/graphql",
@@ -83,6 +83,11 @@ export const createUrlClient = (ssrExchange: any, ctx: any) =>  {
       },
       updates: {
         Mutation: {
+          deletePost: (_result, args, cache, info) => {
+            cache.invalidate({__typename:"Post", 
+            id: (args as DeletePostMutationVariables).id,
+            });
+          },
           vote: (_result, args, cache, info) => {
             const {postId, value} = args as VoteMutationVariables;
             const data = cache.readFragment(
