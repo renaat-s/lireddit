@@ -17,6 +17,8 @@ import {Post} from "./entities/Post";
 import {User} from "./entities/User";
 import path from "path";
 import { Updoot } from './entities/Updoot';
+import { createUserLoader} from './utils/createUserLoader';
+import { createUpdootLoader } from './utils/createUpdootLoader';
 
 const main =  async() => {
     //test
@@ -78,7 +80,12 @@ const main =  async() => {
            resolvers: [HelloResolver, PostResolver,UserResolver],
            validate: false,           
        }),
-       context: ({req,res}) => ({req,res,redis}),
+       context: ({req,res}) => ({
+            req,
+            res,
+            redis, 
+            userLoader: createUserLoader(),
+            updootLoader: createUpdootLoader()}),
    });
 
 

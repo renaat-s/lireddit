@@ -1,5 +1,5 @@
 import { dedupExchange, Exchange, fetchExchange, stringifyVariables } from "urql";
-import {cacheExchange, Resolver} from "@urql/exchange-graphcache"
+import {cacheExchange, Resolver, Cache} from "@urql/exchange-graphcache"
 import { LogoutMutation, MeQuery, MeDocument, LoginMutation, RegisterMutation, VoteMutationVariables, DeletePostMutationVariables } from "../generated/graphql";
 import {betterUpdateQuery} from "./betterUpdateQuery"
 import { pipe, tap } from "wonka";
@@ -55,6 +55,14 @@ const cursorPagination = (): Resolver => {
     };
   };
 };
+
+function invalidateAllPosts(cache: Cache) {
+  const allFields = cache.inspectFields("Query");
+  const fieldInfos = allFields.filter((info)=> info.fieldName === "posts")
+  fieldInfos.forEach((fi) => {
+    cache.invalidate("Query","posts",fi.arguments || {});
+  })
+}
 
 
 export const createUrlClient = (ssrExchange: any, ctx: any) =>  {  
@@ -118,11 +126,7 @@ export const createUrlClient = (ssrExchange: any, ctx: any) =>  {
 
           },
           createPost: (_result, args, cache, info) => {
-            const allFields = cache.inspectFields("Query");
-            const fieldInfos = allFields.filter((info)=> info.fieldName === "posts")
-            fieldInfos.forEach((fi) => {
-              cache.invalidate("Query","posts",fi.arguments || {});
-            })            
+            invalidateAllPosts(cache);
           },
           logout: (_result, args, cache, info) => {
             betterUpdateQuery<LogoutMutation, MeQuery>(
@@ -133,6 +137,7 @@ export const createUrlClient = (ssrExchange: any, ctx: any) =>  {
             );
           },
           login: (_result, args, cache, info) => {
+            invalidateAllPosts(cache);
             betterUpdateQuery<LoginMutation, MeQuery>(
               cache,
               { query: MeDocument },
@@ -146,7 +151,7 @@ export const createUrlClient = (ssrExchange: any, ctx: any) =>  {
                   };
                 }
               }
-            );
+            );            
           },
           register: (_result, args, cache, info) => {
             betterUpdateQuery<RegisterMutation, MeQuery>(

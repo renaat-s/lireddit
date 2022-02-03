@@ -30,8 +30,10 @@ Tools and frameworks used:
 - Yarn package manager
 - urql / next-urql
 - formik, framer-motion, uuid, argon2, 
+- dataloader package
 - nodemon
 - postgres
+- Deploy on digital ocean, using dokku
 
 
 --> Contribute to ben awad project: fix type reaLimit to realLimit, also switch to using urql resolve instead of deprecated resolveField...
