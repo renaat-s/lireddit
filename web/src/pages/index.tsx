@@ -9,9 +9,9 @@ import { createUrlClient } from "../utils/createUrqlClient";
 
 const Index = () => {
   const [variables, setVariables] = useState({limit: 15, cursor: null as null | string});
-  const [{data, fetching, ...other}] = usePostsQuery({variables});
-
-  console.log(fetching, other);
+  // const [{data, fetching, ...other}] = usePostsQuery({variables});
+  const [{data, fetching}] = usePostsQuery({variables});
+  
 
   if(!fetching && !data)
   {
@@ -37,8 +37,8 @@ const Index = () => {
           <Box>
           <Heading fontSize='xl'>{p.title}</Heading> 
           <Text fontSize={12}>posted by {p.creator.username}</Text>
-          <Text fontSize={12}>post id {p.id}</Text>
-          <Text fontSize={12}>post votestatus {p.voteStatus ? p.voteStatus : "null"}</Text>
+          {/* <Text fontSize={12}>post id {p.id}</Text>
+          <Text fontSize={12}>post votestatus {p.voteStatus ? p.voteStatus : "null"}</Text> */}
           <Text mt={4}>{p.textSnippet}</Text>
           </Box>
           
@@ -58,4 +58,4 @@ const Index = () => {
   </Layout>)
 };
 
-export default withUrqlClient(createUrlClient ,{ssr: false}) (Index);
+export default withUrqlClient(createUrlClient ,{ssr: true}) (Index);

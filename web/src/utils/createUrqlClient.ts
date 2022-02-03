@@ -5,6 +5,7 @@ import {betterUpdateQuery} from "./betterUpdateQuery"
 import { pipe, tap } from "wonka";
 import Router from "next/router";
 import gql from 'graphql-tag';
+import { isServer } from "./isServer";
 
 const errorExchange: Exchange = ({ forward }) => (ops$) => {
   return pipe(
@@ -22,8 +23,7 @@ const errorExchange: Exchange = ({ forward }) => (ops$) => {
 const cursorPagination = (): Resolver => {
   return (_parent, fieldArgs, cache, info) => {
     const { parentKey: entityKey, fieldName } = info;
-    const allFields = cache.inspectFields(entityKey);
-    console.log("allFields: ", allFields);
+    const allFields = cache.inspectFields(entityKey);    
     const fieldInfos = allFields.filter((info) => info.fieldName === fieldName);
     const size = fieldInfos.length;
     if (size === 0) {
@@ -57,10 +57,18 @@ const cursorPagination = (): Resolver => {
 };
 
 
-export const createUrlClient = (ssrExchange: any) => ({
+export const createUrlClient = (ssrExchange: any, ctx: any) =>  {  
+  let cookie = '';
+  if(isServer()){ 
+    cookie = ctx.req.headers.cookie;}
+
+  return {
     url: "http://localhost:4000/graphql",
   fetchOptions: {
     credentials: "include" as const,
+    headers: cookie? {
+      cookie,
+    } : undefined,
   },
   exchanges: [
     dedupExchange,
@@ -158,4 +166,5 @@ export const createUrlClient = (ssrExchange: any) => ({
     ssrExchange,
     fetchExchange,
   ],
-});
+  };
+};

@@ -10,7 +10,7 @@ interface UpdootSectionProps {
 export const UpdootSection: React.FC<UpdootSectionProps> = ({post}) => {
     const [loadingState, setLoadingState] = useState<'updoot-loading' | 'downdoot-loading' | 'not-loading'>("not-loading");
     const [,vote] = useVoteMutation();   
-    console.log("postId: ",post.id, "voteStatus: ",post.voteStatus);
+    // console.log("postId: ",post.id, "voteStatus: ",post.voteStatus);
     return (
         <Flex direction="column" justify="center" justifyContent="center" alignItems="center" mr={4}>
         <Box>

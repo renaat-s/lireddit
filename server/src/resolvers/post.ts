@@ -91,14 +91,24 @@ export class PostResolver{
       const realLimit = Math.min(50, limit);
       const realLimitPlusOne = realLimit + 1;
 
-      console.log("user id:",req.session.userId);
+      // console.log("user id:",req.session.userId);
       const replacements: any[] = [realLimitPlusOne,req.session.userId];
 
-      if(cursor){
-        replacements.push(new Date(parseInt(cursor)));
-      }
+      // if(req.session.userId){
+      //   replacements.push(req.session.userId);
+      // }
 
-      const queryString = `
+      // let cursorIdx = 3;
+      
+      if(cursor){        
+        replacements.push(new Date(parseInt(cursor)));
+        // cursorIdx = replacements.length;
+      }
+        
+
+
+      const posts = await getConnection().query(
+        `
       select p.*,
       json_build_object(
         'id', u.id,
@@ -117,13 +127,8 @@ export class PostResolver{
       ${cursor ? `where p."createdAt" < $3` : ""}
       order by p."createdAt" DESC
       limit $1
-      `;
-
-      console.log("Querystring: ",queryString);
-      console.log("replacements: ", replacements);
-
-
-      const posts = await getConnection().query(queryString,replacements);
+      `
+        ,replacements);
         
 
       // console.log(posts)

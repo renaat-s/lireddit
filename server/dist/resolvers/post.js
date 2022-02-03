@@ -97,12 +97,11 @@ let PostResolver = class PostResolver {
         return __awaiter(this, void 0, void 0, function* () {
             const realLimit = Math.min(50, limit);
             const realLimitPlusOne = realLimit + 1;
-            console.log("user id:", req.session.userId);
             const replacements = [realLimitPlusOne, req.session.userId];
             if (cursor) {
                 replacements.push(new Date(parseInt(cursor)));
             }
-            const queryString = `
+            const posts = yield (0, typeorm_1.getConnection)().query(`
       select p.*,
       json_build_object(
         'id', u.id,
@@ -119,10 +118,7 @@ let PostResolver = class PostResolver {
       ${cursor ? `where p."createdAt" < $3` : ""}
       order by p."createdAt" DESC
       limit $1
-      `;
-            console.log("Querystring: ", queryString);
-            console.log("replacements: ", replacements);
-            const posts = yield (0, typeorm_1.getConnection)().query(queryString, replacements);
+      `, replacements);
             return {
                 posts: posts.slice(0, realLimit),
                 hasMore: posts.length === realLimitPlusOne,
