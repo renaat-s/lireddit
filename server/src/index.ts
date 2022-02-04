@@ -44,7 +44,7 @@ const main =  async() => {
     app.set('trust proxy',1)
     app.use(
         cors({
-            origin: process.env.CORS_ORIGIN,
+            origin: "http://localhost:3000", //process.env.CORS_ORIGIN,
             credentials: true
         })
     );
@@ -61,8 +61,8 @@ const main =  async() => {
             maxAge: 1000 * 3600 * 24 * 3650, //10 years
             httpOnly: true,
             secure: __prod__, // __prod__,//cookie will only work in https //trying to fix cookies
-            sameSite: "lax",    //"none" for fixing localhost //trying to fix cookies
-            domain: __prod__ ? ".betterthrucode.com" : undefined
+            sameSite:  "none",//"lax",    //"none" for fixing localhost //trying to fix cookies
+            // domain: __prod__ ? ".betterthrucode.com" : undefined
         },
         saveUninitialized: false,     
         secret: process.env.SESSION_SECRET,

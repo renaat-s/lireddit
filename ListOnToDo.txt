@@ -51,3 +51,10 @@ ssh root@142.93.148.135
 - docker:
 wsl
 cd /mnt/c/"Documents and Settings"/"Renaat Schockaert"/Desktop/"Coding Portfolio"/lireddit/server
+
+
+
+    "eslint-config-next": "^0.2.4",
+
+
+Change back: cors origin in server index.ts in the app.use around line 47

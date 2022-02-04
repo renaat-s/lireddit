@@ -50,7 +50,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const redis = new ioredis_1.default(process.env.REDIS_URL);
     app.set('trust proxy', 1);
     app.use((0, cors_1.default)({
-        origin: process.env.CORS_ORIGIN,
+        origin: "http://localhost:3000",
         credentials: true
     }));
     app.use((0, express_session_1.default)({
@@ -63,8 +63,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             maxAge: 1000 * 3600 * 24 * 3650,
             httpOnly: true,
             secure: constants_1.__prod__,
-            sameSite: "lax",
-            domain: constants_1.__prod__ ? ".betterthrucode.com" : undefined
+            sameSite: "none",
         },
         saveUninitialized: false,
         secret: process.env.SESSION_SECRET,

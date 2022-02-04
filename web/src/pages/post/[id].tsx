@@ -5,12 +5,13 @@ import { EditDeletePostButtons } from "../../components/EditDeletePostButtons";
 import { Layout } from '../../components/Layout';
 import { createUrlClient } from '../../utils/createUrqlClient';
 import { useGetPostFromUrl } from '../../utils/useGetPostFormUrl';
+import { withApollo } from "../../utils/withApollo";
 
 
 export const Post = ({}) => {  
-    const [{data,fetching}] = useGetPostFromUrl();
+    const {data, loading} = useGetPostFromUrl();
     
-    if(fetching){
+    if(loading){
         return (<Layout>Loading...<div></div></Layout>);
     }
 
@@ -31,4 +32,4 @@ export const Post = ({}) => {
     );
 }
 
-export default withUrqlClient(createUrlClient, {ssr:true}) (Post);
+export default withApollo({ssr:true})(Post);
