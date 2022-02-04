@@ -113,6 +113,7 @@ import { getConnection } from "typeorm";
         "ex", 
         1000 * 3600 * 72); // 3 days
 
+      //This will not work in prod, would need to replace with real email provider and set up as env variable
       await sendEmail(email,
         `<a href="http:localhost:3000/change-password/${token}">reset password</a>`  
       )

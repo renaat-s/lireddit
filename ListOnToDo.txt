@@ -37,3 +37,17 @@ Tools and frameworks used:
 
 
 --> Contribute to ben awad project: fix type reaLimit to realLimit, also switch to using urql resolve instead of deprecated resolveField...
+
+May need to come back to the domain parameter in app.use(session({})) in the server index.ts file (line 59ish)
+
+
+Terminal windows:
+
+- ssh-digitalOcean:
+wsl
+cd /
+ssh root@142.93.148.135
+
+- docker:
+wsl
+cd /mnt/c/"Documents and Settings"/"Renaat Schockaert"/Desktop/"Coding Portfolio"/lireddit/server
